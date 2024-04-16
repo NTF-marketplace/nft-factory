@@ -9,7 +9,7 @@ contract ScamFactory {
     // event CollectionCreated(address collectionAddress, string name, string symbol);
 
     function createCollection(string memory name, string memory symbol, string[] memory tokenURIs) public {
-        NewCollection newCollection = new NewCollection(name, symbol);
+        NewCollection newCollection = new NewCollection(name, symbol, msg.sender);
         collections.push(address(newCollection));
         // emit CollectionCreated(address(newCollection), name, symbol);
 
