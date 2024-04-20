@@ -6,6 +6,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import css from 'rollup-plugin-css-only';
 import json from '@rollup/plugin-json';
+import dotenv from 'rollup-plugin-dotenv';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -39,6 +40,7 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		dotenv(),
 		json(),
 		svelte({
 			compilerOptions: {
