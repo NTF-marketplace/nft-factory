@@ -5,13 +5,20 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract NewCollection is ERC721URIStorage, Ownable {
-    constructor(string memory name, string memory symbol, address initialOwner)
-        ERC721(name, symbol)
-        Ownable(initialOwner) 
-    {}
+    uint256 private _tokenIdCounter;
 
-    function mintNFT(address recipient, uint256 tokenId, string memory tokenURI) public onlyOwner {
+    constructor(string memory name, string memory symbol, address initialOwner) ERC721(name, symbol) Ownable(initialOwner) {
+        _tokenIdCounter = 0;
+    }
+
+    function mintNFT(address recipient, string memory tokenURI) public onlyOwner {
+        uint256 tokenId = _tokenIdCounter;
         _mint(recipient, tokenId);
         _setTokenURI(tokenId, tokenURI);
+        _tokenIdCounter++;
+    }
+
+    function totalSupply() public view returns (uint256) {
+        return _tokenIdCounter;
     }
 }

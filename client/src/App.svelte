@@ -1,6 +1,5 @@
 <script>
 	import axios from 'axios';
-	import { create } from 'ipfs-http-client';
 	import Web3 from 'web3';
 	import ScamFactory from '../../blockchain/artifacts/contracts/ScamFactory.sol/ScamFactory.json';
 	import NewCollection from '../../blockchain/artifacts/contracts/NewCollection.sol/NewCollection.json'; 
@@ -167,13 +166,54 @@
 	}
 
 
+	let collections = [];
+	let nftsInCollections = [];
+
+	async function loadCollections() {
+		const accounts = await web3.eth.getAccounts();
+
+		console.log("ScamFactory Contract Address:", scamFactoryContract.options.address);
+		console.log("Accounts:", accounts);
+		const collectionsAddresses = await scamFactoryContract.methods.getCollections().call();
+		console.log(collectionsAddresses);
+
+		collections = collectionsAddresses;
+		const collectionPromises = collectionsAddresses.map(async (address) => {
+			const collectionContract = new web3.eth.Contract(NewCollection.abi, address);
+			const nfts = await loadNFTs(collectionContract);
+			return { address, nfts };
+		});
+
+		nftsInCollections = await Promise.all(collectionPromises);
+	}
+
+	async function loadNFTs(collectionContract) {
+		console.log("NewCollection Contract Address:", collectionContract.options.address);
+		const nfts = [];
+		const totalSupply = await collectionContract.methods.totalSupply().call();
+		console.log("total Supply", totalSupply);
+		for (let i = 0; i < totalSupply; i++) {
+			const tokenURI = await collectionContract.methods.tokenURI(i).call();
+			nfts.push({ tokenId: i, tokenURI });
+		}
+		return nfts;
+	}
 </script>
 
 <main>
 	<h1>NFT Generator</h1>
 	<input type="file" on:change={handleFileChange} accept="image/*" />
 	<button on:click={generateNFTs}>Generate NFTs</button>
+	<button on:click={loadCollections}>Load Collections</button>
 
+	{#each nftsInCollections as collection}
+	  <h2>Collection at: {collection.address}</h2>
+	  <ul>
+		{#each collection.nfts as nft}
+		  <li>NFT #{nft.tokenId}: {nft.tokenURI}</li>
+		{/each}
+	  </ul>
+	{/each}
 </main>
 
 

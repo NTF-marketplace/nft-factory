@@ -14,7 +14,7 @@ contract ScamFactory {
         // emit CollectionCreated(address(newCollection), name, symbol);
 
         for (uint256 i = 0; i < tokenURIs.length; i++) {
-            newCollection.mintNFT(msg.sender, i, tokenURIs[i]);
+            newCollection.mintNFT(msg.sender, tokenURIs[i]);
         }
     }
 
