@@ -9,7 +9,7 @@ contract ScamFactory {
     // event CollectionCreated(address collectionAddress, string name, string symbol);
 
     function createCollection(string memory name, string memory symbol, string[] memory tokenURIs) public {
-        NewCollection newCollection = new NewCollection(name, symbol, msg.sender);
+        NewCollection newCollection = new NewCollection(name, symbol, address(this)); // ScamFactory가 소유자가 되도록 설정
         collections.push(address(newCollection));
         // emit CollectionCreated(address(newCollection), name, symbol);
 
