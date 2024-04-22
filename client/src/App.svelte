@@ -47,6 +47,13 @@
 			alert('Please select an image file.');
 			return;
 		}
+		const collectionNameInput = document.getElementById('collectionName').value;
+		const collectionSymbolInput = document.getElementById('collectionSymbol').value;
+		const numNFTsInput = document.getElementById('numOfNFTs').value;
+
+		const collectionName = collectionNameInput || `Collection-${Math.random().toString(36).substr(2, 9)}`;
+		const collectionSymbol = collectionSymbolInput || `SYM-${Math.random().toString(36).substr(2, 5)}`;
+		const numsOfNFT = numNFTsInput || NUMS_OF_NFT;
 
 		let traits = [];
 		let metadataArray = [];
@@ -87,7 +94,7 @@
 
 			console.log("========2=========");
 
-			for (let i = 0; i < NUMS_OF_NFT; i++) {
+			for (let i = 0; i < numsOfNFT; i++) {
 				const shuffledParts = shuffle(imageParts);
 				traits = shuffledParts.map(part => part.id);
 
@@ -161,8 +168,6 @@
 			console.log("=======4==========");
 
 			const accounts = await web3.eth.getAccounts();
-			const collectionName = 'My NFT Collection';
-			const collectionSymbol = 'MNFT';
 			console.log("nft owner:", accounts[0]);
 
 			const result = await scamFactoryContract.methods.createCollection(collectionName, collectionSymbol, metadataArray)
@@ -250,9 +255,12 @@
 <main>
 	<h1>NFT Generator</h1>
 	<input type="file" on:change={handleFileChange} accept="image/*" />
+	<input type="text" id="collectionName" placeholder="Collection Name (Optional)" />
+	<input type="text" id="collectionSymbol" placeholder="Collection Symbol (Optional)" />
+	<input type="number" id="numOfNFTs" placeholder="Number of NFTs (Default: 1)" min="1" />
 	<button on:click={generateNFTs}>Generate NFTs</button>
 	<button on:click={loadCollections}>Load Collections</button>
-
+	
 	{#each nftsInCollections as collection}
 	  <h2>Collection at: {collection.address}</h2>
 	  <ul>
