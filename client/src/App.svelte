@@ -254,30 +254,38 @@
 
 <main>
 	<h1>NFT Generator</h1>
-	<input type="file" on:change={handleFileChange} accept="image/*" />
-	<input type="text" id="collectionName" placeholder="Collection Name (Optional)" />
-	<input type="text" id="collectionSymbol" placeholder="Collection Symbol (Optional)" />
-	<input type="number" id="numOfNFTs" placeholder="Number of NFTs (Default: 1)" min="1" />
-	<button on:click={generateNFTs}>Generate NFTs</button>
-	<button on:click={loadCollections}>Load Collections</button>
+	<div>
+		<input type="file" on:change={handleFileChange} accept="image/*" />
+		<button on:click={generateNFTs}>Generate NFTs</button>
+		<button on:click={loadCollections}>Load Collections</button>
+	</div>
+	<div>
+		<input type="text" id="collectionName" placeholder="Collection Name (Optional)" />
+		<input type="text" id="collectionSymbol" placeholder="Collection Symbol (Optional)" />
+		<input type="number" id="numOfNFTs" placeholder="Number of NFTs (Default: 1)" min="1" />
+	</div>
 	
-	{#each nftsInCollections as collection}
-	  <h2>Collection at: {collection.address}</h2>
-	  <ul>
-		{#each collection.nfts as nft}
-		  <li>
-			<h3>{nft.name}</h3>
-			<img src={nft.image} alt={nft.name} />
-			<p>{nft.description}</p>
-			<ul>
-			  {#each nft.attributes as attribute}
-				<li>{attribute.trait_type}: {attribute.value}</li>
-			  {/each}
-			</ul>
-		  </li>
-		{/each}
-	  </ul>
-	{/each}
+    {#each nftsInCollections as collection}
+        <div class="collection">
+            <div class="collection-header">
+                <span>Collection at: {collection.address}</span>
+            </div>
+            <div class="nft-container">
+                {#each collection.nfts as nft}
+                    <div class="nft">
+                        <h3>{nft.name}</h3>
+                        <img src={nft.image} alt={nft.name} />
+                        <p>{nft.description}</p>
+                        <ul>
+						{#each nft.attributes as attribute}
+							<li>{attribute.trait_type}: {attribute.value}</li>
+						{/each}
+                        </ul>
+                    </div>
+                {/each}
+            </div>
+        </div>
+    {/each}
 </main>
 
 
@@ -300,5 +308,31 @@
 		main {
 			max-width: none;
 		}
+	}
+	.collection {
+		border-bottom: 1px solid #ccc; /* 구분선 추가 */
+		margin-bottom: 20px;
+	}
+
+	.collection-header {
+		font-weight: bold;
+		margin-bottom: 10px;
+	}
+
+	.nft-container {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center; /* 중앙 정렬 */
+	}
+
+	.nft {
+		text-align: center; /* 텍스트 중앙 정렬 */
+		margin: 10px;
+		width: 200px; /* NFT 블록의 너비 설정 */
+	}
+
+	.nft img {
+		max-width: 100%; /* 이미지 최대 너비 제한 */
+		height: auto; /* 이미지 높이 자동 조정 */
 	}
 </style>
