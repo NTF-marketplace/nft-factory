@@ -1,5 +1,5 @@
 # SCAM FACTORY
-<img width="791" alt="image" src="https://github.com/NTF-marketplace/scam-factory/assets/52898964/28b6a77d-8d60-4c0f-bd85-2ab98ddb8bbf">
+![image](https://github.com/NTF-marketplace/scam-factory/assets/52898964/b07f3c26-d79c-4d99-99ce-af426b4af731)
 
 
 ## Usage (for Develop..)
