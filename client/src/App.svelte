@@ -152,7 +152,23 @@
 						attributes: [
 							{
 								trait_type: 'Grade',
-								value: shuffledParts.map(part => part.id).join('') === '1234' ? 'legend' : 'abnormal'
+								value: shuffledParts.map(part => part.id).join('') === '1234' ? 'legend' : 'abnormal',
+							},
+							{
+								trait_type: 'Part 1',
+								value: shuffledParts[0].id,
+							},
+							{
+								trait_type: 'Part 2',
+								value: shuffledParts[1].id,
+							},
+							{
+								trait_type: 'Part 3',
+								value: shuffledParts[2].id,
+							},
+							{
+								trait_type: 'Part 4',
+								value: shuffledParts[3].id,
 							},
 						],
 					};
@@ -331,6 +347,9 @@
 		width: 200px; /* NFT 블록의 너비 설정 */
 	}
 
+	.nft ul {
+		text-align: left; /* 텍스트 중앙 정렬 */
+	}
 	.nft img {
 		max-width: 100%; /* 이미지 최대 너비 제한 */
 		height: auto; /* 이미지 높이 자동 조정 */
