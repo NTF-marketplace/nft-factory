@@ -143,7 +143,7 @@
 				await new Promise(resolve => resultCanvas.toBlob(async (blob) => {
 					const imageFile = new File([blob], `nft-${i}.png`, { type: 'image/png' });
 					const uploadedImageData = await uploadToPinata(imageFile);
-					const uploadedImageUrl = `https://gateway.pinata.cloud/ipfs/${uploadedImageData.IpfsHash}`;
+					const uploadedImageUrl = `https://ipfs.io/ipfs/${uploadedImageData.IpfsHash}`;
 
 					const metadata = {
 						name: `NFT #${i + 1}`,
@@ -175,7 +175,7 @@
 
 					const metadataFile = new File([JSON.stringify(metadata)], `metadata-${i}.json`, { type: 'application/json' });
 					const uploadedMetadataData = await uploadToPinata(metadataFile);
-					const metadataUrl = `https://gateway.pinata.cloud/ipfs/${uploadedMetadataData.IpfsHash}`;
+					const metadataUrl = `https://ipfs.io/ipfs/${uploadedMetadataData.IpfsHash}`;
 					metadataArray.push(metadataUrl);
 					resolve();
 				}, 'image/png'));
