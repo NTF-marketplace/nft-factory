@@ -13,8 +13,6 @@
   	const scamFactoryContract = new web3.eth.Contract(ScamFactory.abi, CONTRACT_ADDRESS);
 
 	let file;
-	let traits = [];
-	let metadataArray = [];
   
 	const picaResizer = pica();
 
@@ -49,6 +47,9 @@
 			alert('Please select an image file.');
 			return;
 		}
+
+		let traits = [];
+		let metadataArray = [];
 	
 		const reader = new FileReader();
 	
