@@ -6,10 +6,10 @@
 	import pica from 'pica';
   
 	const NUMS_OF_NFT = 1;
-	const DEPLOYED_NETWORK = 'http://localhost:8545';
+	const DEPLOYED_NETWORK = process.env.DEPLOYED_NETWORK;
 	const CONTRACT_ADDRESS = process.env.DEPLOYED_CONTRACT;
-	// const web3 = new Web3(window.ethereum); 
-	const web3 = new Web3(DEPLOYED_NETWORK);
+	const web3 = new Web3(window.ethereum); 
+	// const web3 = new Web3(DEPLOYED_NETWORK);
   	const scamFactoryContract = new web3.eth.Contract(ScamFactory.abi, CONTRACT_ADDRESS);
 
 	let file;
@@ -18,6 +18,58 @@
 
 	const PINATA_GW = process.env.PINATA_GATEWAY;
 	const PINATA_JWT = process.env.PINATA_SECRET_KEY;
+
+	async function disconnectMetamask() {
+		currentAccount = null;
+		paymentToken = 'ETH';
+		balance = '0';
+	}
+
+	let currentAccount = null;
+	let paymentToken = 'ETH';
+	let balance = '0';
+	async function connectMetamask() {
+		let provider;
+
+		if (window.ethereum.providers) {
+			window.ethereum.providers.forEach(p => {
+				if (p.isMetaMask) provider = p;
+			});
+		} else if (window.ethereum.isMetaMask) {
+			provider = window.ethereum;
+		} else {
+			alert("Metamask not detected");
+		}
+
+
+		if (provider) {
+			try {
+				const accounts = await provider.request({ method: 'eth_requestAccounts' });
+				currentAccount = accounts[0];
+				console.log("Connected account:", currentAccount);
+
+				const networkId = await web3.eth.net.getId();
+				if (networkId === 1) {
+					paymentToken = 'ETH'; // 메인넷
+				// } else if (networkId === 137) {
+				// 	paymentToken = 'MATIC';
+				// } else if (networkId === 56) {
+				// 	paymentToken = 'BNB';
+				// } else if (networkId === ) {
+				// 	paymentToken = 'gETH'; // Goerli 테스트넷
+				// } else if (networkId === 42) {
+				// 	paymentToken = 'kETH'; // Kovan 테스트넷
+				} else {
+					paymentToken = 'ETH'; // 알 수 없는 네트워크
+				}
+				await updateBalance();
+			} catch (error) {
+				console.error("Error connecting to Metamask:", error);
+			}
+		} else {
+			alert("Metamask not detected");
+		}
+	}
 
 	async function uploadToPinata(file) {
 		try {
@@ -41,8 +93,16 @@
 	}
 
 
+	async function updateBalance() {
+		balance = await web3.eth.getBalance(currentAccount);
+		balance = web3.utils.fromWei(balance, 'ether'); 
+	}
 
 	async function generateNFTs() {
+		if (!currentAccount) {
+			alert("Please connect to Metamask first");
+			return;
+		}
 		if (!file) {
 			alert('Please select an image file.');
 			return;
@@ -183,12 +243,11 @@
 			}
 			console.log("=======4==========");
 
-			const accounts = await web3.eth.getAccounts();
-			console.log("nft owner:", accounts[0]);
+			console.log("nft owner:", currentAccount);
 
 			const result = await scamFactoryContract.methods.createCollection(collectionName, collectionSymbol, metadataArray)
 			.send({ 
-				from: accounts[0], 
+				from: currentAccount, 
 			}).catch((error) => {
 				console.error("트랜잭션 실행 중 오류 발생:", error);
 			});
@@ -197,6 +256,7 @@
 		};
 
 	  	reader.readAsDataURL(file);
+		await updateBalance();
 	}
   
 	function handleFileChange(event) {
@@ -220,6 +280,10 @@
 	let nftsInCollections = [];
 
 	async function loadCollections() {
+		if (!currentAccount) {
+			alert("Please connect to Metamask first");
+			return;
+		}
 		const accounts = await web3.eth.getAccounts();
 
 		console.log("ScamFactory Contract Address:", scamFactoryContract.options.address);
@@ -235,20 +299,24 @@
 		});
 
 		nftsInCollections = await Promise.all(collectionPromises);
+		await updateBalance();
 	}
 
 	async function loadNFTs(collectionContract) {
+		if (!currentAccount) {
+			alert("Please connect to Metamask first");
+			return;
+		}
 		console.log("NewCollection Contract Address:", collectionContract.options.address);
 		const nfts = [];
-		const accounts = await web3.eth.getAccounts();
 
 		const totalSupply = await collectionContract.methods.totalSupply().call();
 		console.log("totalSupply:", totalSupply);
 
-		const tokens = await collectionContract.methods.getTokensByOwner(accounts[0]).call();
+		const tokens = await collectionContract.methods.getTokensByOwner(currentAccount).call();
 		console.log("getTokensByOwner:", tokens);
 		
-		const metadataURIs = await collectionContract.methods.getTokensMetadataByOwner(accounts[0]).call();
+		const metadataURIs = await collectionContract.methods.getTokensMetadataByOwner(currentAccount).call();
 		console.log("metadataURIs:", metadataURIs);
 
 
@@ -303,7 +371,15 @@
         </div>
     {/each}
 </main>
-
+<div class="metamask-connect">
+	{#if currentAccount}
+		<p>Connected with {currentAccount}</p>
+		<p>{paymentToken} Balance: {balance}</p>
+		<button on:click={disconnectMetamask}>Disconnect</button>
+	{:else}
+		  <button on:click={connectMetamask}>Connect Metamask</button>
+	{/if}
+  </div>
 
 <style>
 	main {
@@ -353,5 +429,11 @@
 	.nft img {
 		max-width: 100%; /* 이미지 최대 너비 제한 */
 		height: auto; /* 이미지 높이 자동 조정 */
+	}
+
+	.metamask-connect {
+		position: absolute;
+		top: 10px;
+		right: 10px;
 	}
 </style>
