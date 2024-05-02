@@ -98,169 +98,175 @@
 		balance = web3.utils.fromWei(balance, 'ether'); 
 	}
 
-	async function generateNFTs() {
-		if (!currentAccount) {
-			alert("Please connect to Metamask first");
-			return;
-		}
-		if (!file) {
-			alert('Please select an image file.');
-			return;
-		}
-		const collectionNameInput = document.getElementById('collectionName').value;
-		const collectionSymbolInput = document.getElementById('collectionSymbol').value;
-		const numNFTsInput = document.getElementById('numOfNFTs').value;
+	// async function generateNFTs() {
+	// 	if (!currentAccount) {
+	// 		alert("Please connect to Metamask first");
+	// 		return;
+	// 	}
+	// 	if (!file) {
+	// 		alert('Please select an image file.');
+	// 		return;
+	// 	}
+	// 	const collectionNameInput = document.getElementById('collectionName').value;
+	// 	const collectionSymbolInput = document.getElementById('collectionSymbol').value;
+	// 	const numNFTsInput = document.getElementById('numOfNFTs').value;
 
-		const collectionName = collectionNameInput || `Collection-${Math.random().toString(36).substr(2, 9)}`;
-		const collectionSymbol = collectionSymbolInput || `SYM-${Math.random().toString(36).substr(2, 5)}`;
-		const numsOfNFT = numNFTsInput || NUMS_OF_NFT;
+	// 	const collectionName = collectionNameInput || `Collection-${Math.random().toString(36).substr(2, 9)}`;
+	// 	const collectionSymbol = collectionSymbolInput || `SYM-${Math.random().toString(36).substr(2, 5)}`;
+	// 	const numsOfNFT = numNFTsInput || NUMS_OF_NFT;
 
-		let traits = [];
-		let metadataArray = [];
+	// 	let traits = [];
+	// 	let metadataArray = [];
 	
-		const reader = new FileReader();
+	// 	const reader = new FileReader();
 	
-		reader.onload = async (event) => {
-			const partSize = 16; // each part is 16x16 pixels
+	// 	reader.onload = async (event) => {
+	// 		const partSize = 16; // each part is 16x16 pixels
 
-			const srcImage = new Image();
-			srcImage.src = event.target.result;
+	// 		const srcImage = new Image();
+	// 		srcImage.src = event.target.result;
 
-			await new Promise(resolve => srcImage.onload = resolve);
+	// 		await new Promise(resolve => srcImage.onload = resolve);
 
-			const canvas = document.createElement('canvas');
-			const ctx = canvas.getContext('2d');
-			canvas.width = partSize * 2;
-			canvas.height = partSize * 2;
+	// 		const canvas = document.createElement('canvas');
+	// 		const ctx = canvas.getContext('2d');
+	// 		canvas.width = partSize * 2;
+	// 		canvas.height = partSize * 2;
 
-			// Resize the image using pica
-			await picaResizer.resize(srcImage, canvas);
+	// 		// Resize the image using pica
+	// 		await picaResizer.resize(srcImage, canvas);
 
-			const imageParts = [];
-			console.log("=======1==========");
-			// Extract parts from the resized image
-			for (let i = 0; i < 2; i++) {
-				for (let j = 0; j < 2; j++) {
-					const partCanvas = document.createElement('canvas');
-					partCanvas.width = partSize;
-					partCanvas.height = partSize;
-					const partCtx = partCanvas.getContext('2d');
+	// 		const imageParts = [];
+	// 		console.log("=======1==========");
+	// 		// Extract parts from the resized image
+	// 		for (let i = 0; i < 2; i++) {
+	// 			for (let j = 0; j < 2; j++) {
+	// 				const partCanvas = document.createElement('canvas');
+	// 				partCanvas.width = partSize;
+	// 				partCanvas.height = partSize;
+	// 				const partCtx = partCanvas.getContext('2d');
 
-					partCtx.drawImage(canvas, j * partSize, i * partSize, partSize, partSize, 0, 0, partSize, partSize);
-					const partImage = await picaResizer.toBlob(partCanvas, 'image/png');
-					imageParts.push({ id: i * 2 + j + 1, image: partImage });
-				}
-			}
+	// 				partCtx.drawImage(canvas, j * partSize, i * partSize, partSize, partSize, 0, 0, partSize, partSize);
+	// 				const partImage = await picaResizer.toBlob(partCanvas, 'image/png');
+	// 				imageParts.push({ id: i * 2 + j + 1, image: partImage });
+	// 			}
+	// 		}
 
-			console.log("========2=========");
+	// 		console.log("========2=========");
 
-			for (let i = 0; i < numsOfNFT; i++) {
-				const shuffledParts = shuffle(imageParts);
-				traits = shuffledParts.map(part => part.id);
+	// 		for (let i = 0; i < numsOfNFT; i++) {
+	// 			const shuffledParts = shuffle(imageParts);
+	// 			traits = shuffledParts.map(part => part.id);
 
-				const resultCanvas = document.createElement('canvas');
-				resultCanvas.width = partSize * 2 * 10;
-				resultCanvas.height = partSize * 2 * 10;
-				const resultCtx = resultCanvas.getContext('2d');
+	// 			const resultCanvas = document.createElement('canvas');
+	// 			resultCanvas.width = partSize * 2 * 10;
+	// 			resultCanvas.height = partSize * 2 * 10;
+	// 			const resultCtx = resultCanvas.getContext('2d');
 
 				
-				await Promise.all(shuffledParts.map(part => {
-					return new Promise((resolve, reject) => {
-						const col = shuffledParts.indexOf(part) % 2; // Column index
-						const row = Math.floor(shuffledParts.indexOf(part) / 2); // Row index
-						const partCanvas = document.createElement('canvas');
-						partCanvas.width = partSize * 10;
-						partCanvas.height = partSize * 10;
-						const partCtx = partCanvas.getContext('2d');
+	// 			await Promise.all(shuffledParts.map(part => {
+	// 				return new Promise((resolve, reject) => {
+	// 					const col = shuffledParts.indexOf(part) % 2; // Column index
+	// 					const row = Math.floor(shuffledParts.indexOf(part) / 2); // Row index
+	// 					const partCanvas = document.createElement('canvas');
+	// 					partCanvas.width = partSize * 10;
+	// 					partCanvas.height = partSize * 10;
+	// 					const partCtx = partCanvas.getContext('2d');
 						
-						// Disable image smoothing
-						partCtx.imageSmoothingEnabled = false;
+	// 					// Disable image smoothing
+	// 					partCtx.imageSmoothingEnabled = false;
 
-						const blobUrl = URL.createObjectURL(part.image);
-						const img = new Image();
+	// 					const blobUrl = URL.createObjectURL(part.image);
+	// 					const img = new Image();
 
-						img.onload = () => {
-							// Draw the image on the part canvas, resizing it without smoothing.
-							partCtx.drawImage(img, 0, 0, partCanvas.width, partCanvas.height);
+	// 					img.onload = () => {
+	// 						// Draw the image on the part canvas, resizing it without smoothing.
+	// 						partCtx.drawImage(img, 0, 0, partCanvas.width, partCanvas.height);
 
-							// Ensure the result canvas also has image smoothing disabled
-							resultCtx.imageSmoothingEnabled = false;
-							resultCtx.drawImage(partCanvas, col * partCanvas.width, row * partCanvas.height, partCanvas.width, partCanvas.height);
+	// 						// Ensure the result canvas also has image smoothing disabled
+	// 						resultCtx.imageSmoothingEnabled = false;
+	// 						resultCtx.drawImage(partCanvas, col * partCanvas.width, row * partCanvas.height, partCanvas.width, partCanvas.height);
 
-							URL.revokeObjectURL(blobUrl);
-							resolve();
-						};
-						img.onerror = () => {
-							console.error("Image load failed");
-							reject(new Error("Image load failed for " + blobUrl));
-						};
-						img.src = blobUrl;
-					});
-				}));
+	// 						URL.revokeObjectURL(blobUrl);
+	// 						resolve();
+	// 					};
+	// 					img.onerror = () => {
+	// 						console.error("Image load failed");
+	// 						reject(new Error("Image load failed for " + blobUrl));
+	// 					};
+	// 					img.src = blobUrl;
+	// 				});
+	// 			}));
 
-				console.log("=======3==========");
+	// 			console.log("=======3==========");
 
-				await new Promise(resolve => resultCanvas.toBlob(async (blob) => {
-					const imageFile = new File([blob], `nft-${i}.png`, { type: 'image/png' });
-					const uploadedImageData = await uploadToPinata(imageFile);
-					const uploadedImageUrl = `https://ipfs.io/ipfs/${uploadedImageData.IpfsHash}`;
+	// 			await new Promise(resolve => resultCanvas.toBlob(async (blob) => {
+	// 				const imageFile = new File([blob], `nft-${i}.png`, { type: 'image/png' });
+	// 				const uploadedImageData = await uploadToPinata(imageFile);
+	// 				const uploadedImageUrl = `https://ipfs.io/ipfs/${uploadedImageData.IpfsHash}`;
 
-					const metadata = {
-						name: `NFT #${i + 1}`,
-						description: `A unique NFT with traits: ${traits.join(', ')}`,
-						image: uploadedImageUrl,
-						attributes: [
-							{
-								trait_type: 'Grade',
-								value: shuffledParts.map(part => part.id).join('') === '1234' ? 'legend' : 'abnormal',
-							},
-							{
-								trait_type: 'Part 1',
-								value: shuffledParts[0].id,
-							},
-							{
-								trait_type: 'Part 2',
-								value: shuffledParts[1].id,
-							},
-							{
-								trait_type: 'Part 3',
-								value: shuffledParts[2].id,
-							},
-							{
-								trait_type: 'Part 4',
-								value: shuffledParts[3].id,
-							},
-						],
-					};
+	// 				const metadata = {
+	// 					name: `NFT #${i + 1}`,
+	// 					description: `A unique NFT with traits: ${traits.join(', ')}`,
+	// 					image: uploadedImageUrl,
+	// 					attributes: [
+	// 						{
+	// 							trait_type: 'Grade',
+	// 							value: shuffledParts.map(part => part.id).join('') === '1234' ? 'legend' : 'abnormal',
+	// 						},
+	// 						{
+	// 							trait_type: 'Part 1',
+	// 							value: shuffledParts[0].id,
+	// 						},
+	// 						{
+	// 							trait_type: 'Part 2',
+	// 							value: shuffledParts[1].id,
+	// 						},
+	// 						{
+	// 							trait_type: 'Part 3',
+	// 							value: shuffledParts[2].id,
+	// 						},
+	// 						{
+	// 							trait_type: 'Part 4',
+	// 							value: shuffledParts[3].id,
+	// 						},
+	// 					],
+	// 				};
 
-					const metadataFile = new File([JSON.stringify(metadata)], `metadata-${i}.json`, { type: 'application/json' });
-					const uploadedMetadataData = await uploadToPinata(metadataFile);
-					const metadataUrl = `https://ipfs.io/ipfs/${uploadedMetadataData.IpfsHash}`;
-					metadataArray.push(metadataUrl);
-					resolve();
-				}, 'image/png'));
+	// 				const metadataFile = new File([JSON.stringify(metadata)], `metadata-${i}.json`, { type: 'application/json' });
+	// 				const uploadedMetadataData = await uploadToPinata(metadataFile);
+	// 				const metadataUrl = `https://ipfs.io/ipfs/${uploadedMetadataData.IpfsHash}`;
+	// 				metadataArray.push(metadataUrl);
+	// 				resolve();
+	// 			}, 'image/png'));
 
-			}
-			console.log("=======4==========");
+	// 		}
+	// 		console.log("=======4==========");
 
-			console.log("nft owner:", currentAccount);
+	// 		console.log("nft owner:", currentAccount);
 
-			const result = await scamFactoryContract.methods.createCollection(collectionName, collectionSymbol, metadataArray)
-			.send({ 
-				from: currentAccount, 
-			}).catch((error) => {
-				console.error("트랜잭션 실행 중 오류 발생:", error);
-			});
+	// 		const result = await scamFactoryContract.methods.createCollection(collectionName, collectionSymbol, metadataArray)
+	// 		.send({ 
+	// 			from: currentAccount, 
+	// 		}).catch((error) => {
+	// 			console.error("트랜잭션 실행 중 오류 발생:", error);
+	// 		});
 
-			console.log("createCollection:", result);
-		};
+	// 		console.log("createCollection:", result);
+	// 	};
 
-	  	reader.readAsDataURL(file);
-		await updateBalance();
-	}
+	//   	reader.readAsDataURL(file);
+	// 	await updateBalance();
+	// }
   
+	// function handleFileChange(event) {
+	//   file = event.target.files[0];
+	// }
+
+	let files = [];
+
 	function handleFileChange(event) {
-	  file = event.target.files[0];
+		files = [...event.target.files];
 	}
   
 	function shuffle(array) {
@@ -275,6 +281,84 @@
 	  return array;
 	}
 
+	async function generateNFTs() {
+		if (!currentAccount) {
+			alert("Please connect to Metamask first");
+			return;
+		}
+		if (!files || files.length === 0) {
+			alert('Please select image files.');
+			return;
+		}
+		const collectionNameInput = document.getElementById('collectionName').value;
+		const collectionSymbolInput = document.getElementById('collectionSymbol').value;
+
+		const collectionName = collectionNameInput || `Collection-${Math.random().toString(36).substr(2, 9)}`;
+		const collectionSymbol = collectionSymbolInput || `SYM-${Math.random().toString(36).substr(2, 5)}`;
+
+		let metadataArray = [];
+
+		for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
+			const traits = shuffle([1,2,3,4]);
+			const file = files[fileIndex];
+			const reader = new FileReader();
+
+			reader.onload = async (event) => {
+			const imageFile = new File([event.target.result], `nft-${fileIndex}.png`, { type: 'image/png' });
+			const uploadedImageData = await uploadToPinata(imageFile);
+			const uploadedImageUrl = `https://ipfs.io/ipfs/${uploadedImageData.IpfsHash}`;
+
+			const metadata = {
+				name: `NFT #${fileIndex + 1}`,
+				description: `A unique NFT from image ${fileIndex + 1}`,
+				image: uploadedImageUrl,
+				attributes: [
+					{
+						trait_type: 'Grade',
+						value: traits.join('') === '1234' ? 'legend' : 'abnormal',
+					},
+					{
+						trait_type: 'Part 1',
+						value: traits[0]
+					},
+					{
+						trait_type: 'Part 2',
+						value: traits[1]
+					},
+					{
+						trait_type: 'Part 3',
+						value: traits[2]
+					},
+					{
+						trait_type: 'Part 4',
+						value: traits[3]
+					},
+				],
+			};
+
+			const metadataFile = new File([JSON.stringify(metadata)], `metadata-${fileIndex}.json`, { type: 'application/json' });
+			const uploadedMetadataData = await uploadToPinata(metadataFile);
+			const metadataUrl = `https://ipfs.io/ipfs/${uploadedMetadataData.IpfsHash}`;
+			metadataArray.push(metadataUrl);
+
+			if (fileIndex === files.length - 1) {
+				console.log("nft owner:", currentAccount);
+
+				const result = await scamFactoryContract.methods.createCollection(collectionName, collectionSymbol, metadataArray)
+				.send({
+					from: currentAccount,
+				}).catch((error) => {
+					console.error("트랜잭션 실행 중 오류 발생:", error);
+				});
+
+				console.log("createCollection:", result);
+				await updateBalance();
+			}
+			};
+
+			reader.readAsArrayBuffer(file);
+		}
+	}
 
 	let collections = [];
 	let nftsInCollections = [];
@@ -339,7 +423,7 @@
 <main>
 	<h1>NFT Generator</h1>
 	<div>
-		<input type="file" on:change={handleFileChange} accept="image/*" />
+		<input type="file" on:change={handleFileChange} accept="image/*" multiple />
 		<button on:click={generateNFTs}>Generate NFTs</button>
 		<button on:click={loadCollections}>Load Collections</button>
 	</div>
