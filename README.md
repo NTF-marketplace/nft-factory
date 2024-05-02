@@ -34,6 +34,9 @@ OpenSea 에서도 확인할 수 있습니다.
 
 
 ### 4. use this client!!
+1. create image using midjurney
+2. copy and split image
+   * https://ezgif.com/sprite-cutter
 
 
 <br>
