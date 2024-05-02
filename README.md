@@ -31,7 +31,7 @@ OpenSea 에서도 확인할 수 있습니다.
 ```
 
 ### 3. connect metamask
-
+1. check account, network
 
 ### 4. use this client!!
 1. create image using midjurney
