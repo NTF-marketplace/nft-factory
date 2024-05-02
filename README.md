@@ -1,5 +1,42 @@
 # SCAM FACTORY
-![image](https://github.com/NTF-marketplace/scam-factory/assets/52898964/b07f3c26-d79c-4d99-99ce-af426b4af731)
+POLYGON 체인의 ERC-721 NFT 생성기입니다.   
+요청에 의해 업로드한 이미지에 대해서만 NFT를 생성하도록 변경했습니다.    
+![image](https://github.com/NTF-marketplace/scam-factory/assets/52898964/e76fb592-6488-4b73-90dd-b72ffc4fa868)
+
+NFT 생성자가 가스비를 내고, NFT를 소유할 수 있습니다.    
+OpenSea 에서도 확인할 수 있습니다.   
+<img width="1066" alt="image" src="https://github.com/NTF-marketplace/scam-factory/assets/52898964/2343734c-80ce-4fc0-acf1-17b8d7bea039">
+
+
+## Usage (polygon mainnet)
+### 1. setting
+1. git clone repository
+2. open this project on VSCODE
+3. join PINATA
+   * https://www.pinata.cloud/
+4. get API KEY
+5. copy .env_example to .env
+6. modify the .env file
+   ```
+    PINATA_GATEWAY=your_pinata_gw_here          -> unused
+    PINATA_SECRET_KEY=!!!your_pinata_secret_here!!! 
+    DEPLOYED_CONTRACT=0x7eA0E04cCa2d9aFa088DEa118f3C5C472d988F64
+    DEPLOYED_NETWORK=http://localhost:8545      -> unused
+   ```
+### 2. run client
+```bash
+> cd client
+> npm install
+> npm run dev
+```
+
+### 3. connect metamask
+
+
+### 4. use this client!!
+
+
+<br>
 
 
 ## Usage (for Develop..)
