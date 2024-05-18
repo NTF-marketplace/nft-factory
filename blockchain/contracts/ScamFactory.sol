@@ -18,6 +18,15 @@ contract ScamFactory {
         }
     }
 
+    function addNFTsToCollection(address collectionAddress, string[] memory tokenURIs) public {
+        NewCollection existingCollection = NewCollection(collectionAddress);
+        require(existingCollection.owner() == address(this), "ScamFactory is not the owner of this collection");
+
+        for (uint256 i = 0; i < tokenURIs.length; i++) {
+            existingCollection.mintNFT(msg.sender, tokenURIs[i]);
+        }
+    }
+
     function getCollections() public view returns (address[] memory) {
         return collections;
     }
