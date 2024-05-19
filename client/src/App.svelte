@@ -5,15 +5,12 @@
 	import NewCollection from '../../blockchain/artifacts/contracts/NewCollection.sol/NewCollection.json'; 
 	import pica from 'pica';
 
-	const DEPLOYED_NETWORK = process.env.DEPLOYED_NETWORK;
+	// const DEPLOYED_NETWORK = process.env.DEPLOYED_NETWORK;
 	const CONTRACT_ADDRESS = process.env.DEPLOYED_CONTRACT;
 	const web3 = new Web3(window.ethereum); 
 	const scamFactoryContract = new web3.eth.Contract(ScamFactory.abi, CONTRACT_ADDRESS);
 
-	let file;
-	const picaResizer = pica();
-
-	const PINATA_GW = process.env.PINATA_GATEWAY;
+	// const PINATA_GW = process.env.PINATA_GATEWAY;
 	const PINATA_JWT = process.env.PINATA_SECRET_KEY;
 
 	let currentAccount = null;
