@@ -55,6 +55,7 @@
 						break;
 					case 137:
 					case 80001:
+					case 80002:
 						paymentToken = 'MATIC'; // Polygon Mainnet and Testnet
 						console.log("matic");
 						break;
@@ -116,55 +117,67 @@
 
 	async function processFiles(files) {
 		let metadataArray = [];
-		for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
+		const filePromises = files.map(async (file, fileIndex) => {
 			const traits = shuffle([1, 2, 3, 4]);
-			const file = files[fileIndex];
 			const reader = new FileReader();
 
-			reader.onload = async (event) => {
-				const imageFile = new File([event.target.result], `nft-${fileIndex}.png`, { type: 'image/png' });
-				const uploadedImageData = await uploadToPinata(imageFile);
-				const uploadedImageUrl = `https://ipfs.io/ipfs/${uploadedImageData.IpfsHash}`;
+			const fileLoadPromise = new Promise((resolve, reject) => {
+				reader.onload = async (event) => {
+					try {
+						const imageFile = new File([event.target.result], `nft-${fileIndex}.png`, { type: 'image/png' });
+						const uploadedImageData = await uploadToPinata(imageFile);
+						const uploadedImageUrl = `https://ipfs.io/ipfs/${uploadedImageData.IpfsHash}`;
 
-				const metadata = {
-					name: `NFT #${fileIndex + 1}`,
-					description: `A unique NFT from image ${fileIndex + 1}`,
-					image: uploadedImageUrl,
-					attributes: [
-						{
-							trait_type: 'Grade',
-							value: traits.join('') === '1234' ? 'legend' : 'abnormal',
-						},
-						{
-							trait_type: 'Part 1',
-							value: traits[0]
-						},
-						{
-							trait_type: 'Part 2',
-							value: traits[1]
-						},
-						{
-							trait_type: 'Part 3',
-							value: traits[2]
-						},
-						{
-							trait_type: 'Part 4',
-							value: traits[3]
-						},
-					],
+						const randomName = `${Math.random().toString(36).substr(2, 9)}`;
+
+						const metadata = {
+							name: `NFT #${randomName + 1}`,
+							description: `A unique NFT from image ${randomName + 1}`,
+							image: uploadedImageUrl,
+							attributes: [
+								{
+									trait_type: 'Grade',
+									value: traits.join('') === '1234' ? 'legend' : 'abnormal',
+								},
+								{
+									trait_type: 'Part 1',
+									value: traits[0]
+								},
+								{
+									trait_type: 'Part 2',
+									value: traits[1]
+								},
+								{
+									trait_type: 'Part 3',
+									value: traits[2]
+								},
+								{
+									trait_type: 'Part 4',
+									value: traits[3]
+								},
+								{
+									trait_type: 'random Name',
+									value: randomName
+								},
+							],
+						};
+
+						const metadataFile = new File([JSON.stringify(metadata)], `metadata-${fileIndex}.json`, { type: 'application/json' });
+						const uploadedMetadataData = await uploadToPinata(metadataFile);
+						const metadataUrl = `https://ipfs.io/ipfs/${uploadedMetadataData.IpfsHash}`;
+						metadataArray.push(metadataUrl);
+						resolve();
+					} catch (error) {
+						reject(error);
+					}
 				};
+			});
 
-				const metadataFile = new File([JSON.stringify(metadata)], `metadata-${fileIndex}.json`, { type: 'application/json' });
-				const uploadedMetadataData = await uploadToPinata(metadataFile);
-				const metadataUrl = `https://ipfs.io/ipfs/${uploadedMetadataData.IpfsHash}`;
-				metadataArray.push(metadataUrl);
-
-				if (fileIndex === files.length - 1) {
-					return metadataArray;
-				}
-			};
 			reader.readAsArrayBuffer(file);
-		}
+			return fileLoadPromise;
+		});
+
+		await Promise.all(filePromises);
 		return metadataArray;
 	}
 
@@ -179,7 +192,7 @@
 		return result;
 	}
 
-	async function executeTransactionWithRetries(method, fromAddress, retries = 3) {
+	async function executeTransactionWithRetries(method, fromAddress, retries = 1) {
 		for (let i = 0; i < retries; i++) {
 			try {
 				return await sendTransaction(method, fromAddress);
@@ -206,6 +219,7 @@
 		const collectionSymbol = collectionSymbolInput || `SYM-${Math.random().toString(36).substr(2, 5)}`;
 
 		const metadataArray = await processFiles(files);
+		console.log("metadataArray: ", metadataArray);
 
 		const createCollectionMethod = scamFactoryContract.methods.createCollection(collectionName, collectionSymbol, metadataArray);
 		const result = await executeTransactionWithRetries(createCollectionMethod, currentAccount);
@@ -224,6 +238,7 @@
 		}
 
 		const metadataArray = await processFiles(files);
+		console.log("metadataArray: ", metadataArray);
 
 		const addNFTsMethod = scamFactoryContract.methods.addNFTsToCollection(collectionAddress, metadataArray);
 		const result = await executeTransactionWithRetries(addNFTsMethod, currentAccount);
@@ -275,7 +290,7 @@
 		console.log("metadataURIs:", metadataURIs);
 
 		for (let i = 0; i < metadataURIs.length; i++) {
-			const response = await axios.get(metadataURIs[i]);
+			const response = await axios.get(metadataURIs[i].metadata);
 			console.log("respose: ", response);
 			const metadata = response.data;
 			nfts.push({

@@ -59,12 +59,20 @@ contract NewCollection is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burn
         return tokens;
     }
 
-    function getTokensMetadataByOwner(address owner) public view returns (string[] memory) {
+    struct TokenMetadata {
+        uint256 tokenId;
+        string metadata;
+    }
+
+    function getTokensMetadataByOwner(address owner) public view returns (TokenMetadata[] memory) {
         uint256[] memory tokens = getTokensByOwner(owner);
-        string[] memory metadatas = new string[](tokens.length);
+        TokenMetadata[] memory metadatas = new TokenMetadata[](tokens.length);
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            metadatas[i] = tokenURI(tokens[i]);
+            metadatas[i] = TokenMetadata({
+                tokenId: tokens[i],
+                metadata: tokenURI(tokens[i])
+            });
         }
 
         return metadatas;
