@@ -9,6 +9,8 @@ OpenSea 에서도 확인할 수 있습니다.
 
 
 ## Usage (polygon mainnet)
+자세한 내용은 https://dongkim.lol/posts/project/scam_factory/1_create_nft/#%ED%85%8C%EC%8A%A4%ED%8A%B8%EB%84%B7-%EB%B0%B0%ED%8F%AC 이 링크를 따라가세요
+
 ### 1. setting
 1. git clone repository
 2. open this project on VSCODE
